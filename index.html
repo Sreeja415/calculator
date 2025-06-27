@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #e0f2f7; /* Light blue background */
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            color: #333;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            background-color: #ffffff;
+            border-radius: 20px; /* More rounded corners */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+            padding: 30px;
+            width: 100%;
+            max-width: 360px; /* Fixed max width for a compact calculator */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+        }
+
+        #display {
+            width: 100%;
+            background-color: #2c3e50; /* Dark display background */
+            color: #ecf0f1; /* Light text */
+            border: none;
+            border-radius: 10px;
+            padding: 20px;
+            font-size: 2.5em; /* Larger font size for display */
+            text-align: right;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+            overflow: hidden; /* Hide overflow text */
+            white-space: nowrap; /* Keep text on one line */
+            text-overflow: ellipsis; /* Add ellipsis for overflow */
+            height: 80px; /* Fixed height for consistent look */
+            line-height: 40px; /* Center text vertically */
+            box-sizing: border-box;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px; /* Increased gap */
+        }
+
+        .button {
+            background-color: #f0f0f0; /* Light gray for number/operation buttons */
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            padding: 20px 0;
+            font-size: 1.8em; /* Larger font size for buttons */
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for buttons */
+            transition: all 0.15s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none; /* Prevent text selection */
+        }
+
+        .button:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px); /* Slight lift on hover */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+            background-color: #d0d0d0;
+        }
+
+        .button.operator {
+            background-color: #81d4fa; /* Light blue for operators */
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .button.operator:hover {
+            background-color: #4fc3f7;
+        }
+        .button.operator:active {
+            background-color: #29b6f6;
+        }
+
+        .button.equal {
+            background-color: #4caf50; /* Green for equals */
+            color: white;
+            font-weight: 700;
+            grid-column: span 2; /* Span two columns */
+        }
+
+        .button.equal:hover {
+            background-color: #66bb6a;
+        }
+        .button.equal:active {
+            background-color: #43a047;
+        }
+
+        .button.clear {
+            background-color: #ef5350; /* Red for clear */
+            color: white;
+            font-weight: 600;
+        }
+
+        .button.clear:hover {
+            background-color: #e57373;
+        }
+        .button.clear:active {
+            background-color: #d32f2f;
+        }
+
+        .button.decimal {
+            background-color: #f0f0f0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 400px) {
+            .calculator-container {
+                padding: 20px;
+                max-width: 95%;
+            }
+            #display {
+                font-size: 2em;
+                height: 70px;
+                padding: 15px;
+            }
+            .button {
+                padding: 15px 0;
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>CALCULATOR</h1>
+        <input type="text" id="display" value="0" readonly>
+        <div class="buttons-grid">
+            <button class="button clear" id="clear">C</button>
+            <button class="button operator" id="divide">/</button>
+            <button class="button operator" id="multiply">*</button>
+            <button class="button operator" id="backspace">&#9003;</button> <!-- Backspace icon -->
+
+            <button class="button" id="seven">7</button>
+            <button class="button" id="eight">8</button>
+            <button class="button" id="nine">9</button>
+            <button class="button operator" id="subtract">-</button>
+
+            <button class="button" id="four">4</button>
+            <button class="button" id="five">5</button>
+            <button class="button" id="six">6</button>
+            <button class="button operator" id="add">+</button>
+
+            <button class="button" id="one">1</button>
+            <button class="button" id="two">2</button>
+            <button class="button" id="three">3</button>
+            <button class="button decimal" id="decimal">.</button>
+
+            <button class="button" id="zero">0</button>
+            <button class="button equal" id="equal">=</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+        const buttons = document.querySelectorAll('.button');
+
+        let currentInput = '0';    // The number currently being typed (second operand)
+        let operator = null;       // The active operator (+, -, *, /)
+        let previousInput = '';    // The first operand of an operation
+        let fullExpression = '0';  // The string representing the entire expression on display
+        let resetDisplayForNewNumber = false; // Flag to clear display when starting a new number after operator/equals
+
+        /**
+         * @function updateDisplay
+         * @description Updates the text content of the calculator display.
+         * @param {string} value - The string to be displayed.
+         */
+        function updateDisplay(value) {
+            display.value = value;
+        }
+
+        /**
+         * @function handleNumberClick
+         * @description Handles clicks on number buttons (0-9).
+         * @param {string} number - The number digit clicked.
+         */
+        function handleNumberClick(number) {
+            if (resetDisplayForNewNumber) {
+                // If a new number is being started after an operator or an equals
+                currentInput = number;
+                // fullExpression should combine previousInput, operator, and the new number
+                fullExpression = previousInput + (operator || '') + number;
+                resetDisplayForNewNumber = false;
+            } else {
+                if (currentInput === '0' && number !== '.') {
+                    currentInput = number; // Replace initial '0' for new number entry
+                    if (fullExpression === '0') {
+                        fullExpression = number;
+                    } else if (operator === null) { // If no pending operator, and not '0', append to existing number
+                        fullExpression += number;
+                    } else { // If an operator is active (typing second number)
+                        fullExpression += number;
+                    }
+                } else {
+                    currentInput += number;
+                    fullExpression += number;
+                }
+            }
+            updateDisplay(fullExpression);
+        }
+
+        /**
+         * @function handleDecimalClick
+         * @description Handles clicks on the decimal point button.
+         * Adds a decimal point if one isn't already present in the current input.
+         */
+        function handleDecimalClick() {
+            if (resetDisplayForNewNumber) {
+                currentInput = '0.';
+                fullExpression = previousInput + (operator || '') + '0.';
+                resetDisplayForNewNumber = false;
+            } else if (!currentInput.includes('.')) {
+                currentInput += '.';
+                fullExpression += '.';
+            }
+            updateDisplay(fullExpression);
+        }
+
+        /**
+         * @function handleOperatorClick
+         * @description Handles clicks on operator buttons (+, -, *, /).
+         * Stores the previous input and the selected operator.
+         * @param {string} op - The operator symbol clicked.
+         */
+        function handleOperatorClick(op) {
+            if (operator && !resetDisplayForNewNumber) {
+                // If there's a pending operation and a new number was entered, calculate first
+                calculate(); // This updates currentInput and fullExpression to the result
+                previousInput = currentInput; // Now previousInput is the result of the intermediate calculation
+            } else if (!operator) { // Only set previousInput if no operator was already pending
+                previousInput = currentInput; // First operand for this new operation
+            }
+            
+            operator = op; // Set the new operator
+            resetDisplayForNewNumber = true; // Prepare for new number input
+
+            // Update full expression to include the operator, replacing any existing operator at the end
+            if (['+', '-', '*', '/'].includes(fullExpression.slice(-1)) && fullExpression.length > 0) {
+                fullExpression = fullExpression.slice(0, -1) + operator;
+            } else {
+                fullExpression += operator;
+            }
+            updateDisplay(fullExpression);
+        }
+
+        /**
+         * @function handleClearClick
+         * @description Resets all calculator state to default.
+         */
+        function handleClearClick() {
+            currentInput = '0';
+            operator = null;
+            previousInput = '';
+            fullExpression = '0';
+            resetDisplayForNewNumber = false;
+            updateDisplay(currentInput);
+        }
+
+        /**
+         * @function handleBackspaceClick
+         * @description Removes the last character from the current input and the full expression.
+         * If the input becomes empty, sets it to '0'.
+         */
+        function handleBackspaceClick() {
+            if (fullExpression === '0' || fullExpression === '') { // Also check for empty string
+                fullExpression = '0'; // Ensure it's never truly empty
+                updateDisplay(fullExpression);
+                return;
+            }
+
+            // If an operator was just pressed and the display was reset for a new number
+            // or if the display currently shows previousInput + operator (e.g., "12+")
+            if (resetDisplayForNewNumber && operator !== null && previousInput !== '' && fullExpression === previousInput + operator) {
+                // Revert to the state before the operator was pressed
+                fullExpression = previousInput;
+                currentInput = previousInput;
+                operator = null;
+                resetDisplayForNewNumber = false;
+                updateDisplay(fullExpression);
+                return;
+            }
+            
+            // Handle backspace on a number or a result
+            fullExpression = fullExpression.slice(0, -1);
+            if (fullExpression === '') {
+                fullExpression = '0';
+            }
+
+            // Update currentInput. If we're typing a new number after an operator,
+            // currentInput is the second operand. Otherwise, it's the main input.
+            if (operator !== null && !resetDisplayForNewNumber) {
+                // We are typing the second operand, so currentInput refers to that part.
+                currentInput = currentInput.slice(0, -1);
+                if (currentInput === '') {
+                    // If second operand is backspaced to empty, what's next?
+                    // For simplicity, we'll keep the fullExpression as is and expect next input to start fresh
+                    currentInput = '0'; // Ensure currentInput isn't empty internally
+                }
+            } else {
+                // We are typing the first operand or after an equals
+                currentInput = currentInput.slice(0, -1);
+                if (currentInput === '') {
+                    currentInput = '0';
+                }
+            }
+
+            updateDisplay(fullExpression);
+        }
+
+
+        /**
+         * @function calculate
+         * @description Performs the calculation based on the stored previous input,
+         * current input, and operator. Updates the display with the result.
+         */
+        function calculate() {
+            // If there's no operator or no previous input, and currentInput is not just '0'
+            // or if the display already shows a result and no new operation is pending
+            if (!operator || previousInput === '') {
+                // If the user just pressed '=' on a single number, do nothing or show the number again
+                updateDisplay(currentInput);
+                return;
+            }
+
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            let result;
+
+            if (isNaN(prev) || isNaN(current)) {
+                updateDisplay('Error');
+                handleClearClick(); // Reset on error
+                return;
+            }
+
+            switch (operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    if (current === 0) {
+                        updateDisplay('Error: Div by 0');
+                        handleClearClick(); // Reset on division by zero
+                        return;
+                    }
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+
+            currentInput = String(result); // Result becomes the new current input for subsequent operations
+            fullExpression = String(result); // Full expression becomes the result
+            operator = null; // Clear operator after calculation
+            previousInput = ''; // Clear previous input as calculation is complete
+            resetDisplayForNewNumber = true; // Next number input should overwrite the result
+            updateDisplay(fullExpression); // Display the result
+        }
+
+        // Add event listeners to all buttons
+        buttons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const buttonId = e.target.id;
+                const buttonText = e.target.textContent;
+
+                if (buttonId === 'clear') {
+                    handleClearClick();
+                } else if (buttonId === 'equal') {
+                    calculate();
+                } else if (buttonId === 'decimal') {
+                    handleDecimalClick();
+                } else if (buttonId === 'backspace') {
+                    handleBackspaceClick();
+                } else if (['add', 'subtract', 'multiply', 'divide'].includes(buttonId)) {
+                    handleOperatorClick(buttonText); // Use button text for operator symbol
+                } else {
+                    // It's a number button
+                    handleNumberClick(buttonText);
+                }
+            });
+        });
+
+        // Initialize display
+        updateDisplay(fullExpression);
+    </script>
+</body>
+</html>
